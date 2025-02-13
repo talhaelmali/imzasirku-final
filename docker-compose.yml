@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+  nextjs-client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - nodejs-server
+    environment:
+      - REACT_APP_API_URL=http://nodejs-server:4000
+    networks:
+      - app-network
+
+  nodejs-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    depends_on:
+      ollama-llm:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - app-network
+
+  ollama-llm:
+    image: ollama/ollama
+    container_name: ollama-llm
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+    networks:
+      - app-network
+
+volumes:
+  ollama:
+
+networks:
+  app-network:
+    driver: bridge

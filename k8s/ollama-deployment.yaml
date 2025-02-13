@@ -1,0 +1,60 @@
+# Ollama LLM Deployment & Service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama-llm
+  labels:
+    app: ollama-llm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ollama-llm
+  template:
+    metadata:
+      labels:
+        app: ollama-llm
+    spec:
+      containers:
+      - name: ollama-llm
+        image: ollama/ollama
+        ports:
+        - containerPort: 11434
+        command: ["ollama", "serve"]
+        env:
+        - name: OLLAMA_HOST
+          value: "0.0.0.0:11434"
+        resources:
+          limits:
+            memory: "8Gi"
+            nvidia.com/gpu: 1
+          requests:
+            memory: "6Gi"
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: ollama-data
+          mountPath: /root/.ollama
+        readinessProbe:
+          httpGet:
+            path: /api/tags
+            port: 11434
+          initialDelaySeconds: 30
+          periodSeconds: 15
+      volumes:
+      - name: ollama-data
+        persistentVolumeClaim:
+          claimName: ollama-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ollama-llm
+spec:
+  selector:
+    app: ollama-llm
+  ports:
+    - protocol: TCP
+      port: 11434
+      targetPort: 11434
+  type: ClusterIP

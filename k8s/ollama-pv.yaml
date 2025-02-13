@@ -1,0 +1,15 @@
+# Persistent Volume for Ollama
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ollama-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
+  hostPath:
+    path: "/mnt/data/ollama"

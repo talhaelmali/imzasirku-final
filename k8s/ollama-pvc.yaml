@@ -1,0 +1,14 @@
+# Persistent Volume Claim for Ollama
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-path
+  volumeName: ollama-pv
