@@ -16,7 +16,7 @@ function App() {
 
     const handleClear = async () => {
         try {
-            await axios.post("http://localhost:4000/clear");
+            await axios.post("http://nodejs-server:4000/clear");
             setFile(null);
             setResponse("");
             setChatHistory([]);
@@ -57,7 +57,7 @@ function App() {
 
         try {
             const res = await axios.post(
-                "http://localhost:4000/upload",
+                "http://nodejs-server:4000/upload",
                 formData,
                 {
                     headers: {
@@ -86,7 +86,7 @@ function App() {
         setQuestion("");
 
         try {
-            const res = await axios.post("http://localhost:4000/chat", {
+            const res = await axios.post("http://nodejs-server:4000/chat", {
                 message: userQuestion,
             });
             setChatHistory((prev) => [

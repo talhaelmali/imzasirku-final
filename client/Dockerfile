@@ -1,21 +1,21 @@
-# Base image
-FROM node:16-alpine
+# Base image olarak resmi Node.js 18 Alpine kullanıyoruz (küçük ve hafif)
+FROM node:18-alpine
 
-# Set the working directory
+# Çalışma dizinini belirle
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Paket dosyalarını kopyala ve bağımlılıkları yükle
+COPY package.json package-lock.json ./
+RUN npm install --frozen-lockfile
 
-# Install dependencies
-RUN npm install
-
-# Build the application
+# Uygulama kodlarını kopyala
 COPY . .
+
+# Next.js build işlemini yap
 RUN npm run build
 
-# Expose port
+# Portu aç
 EXPOSE 3000
 
-# Start the application
+# Uygulamayı başlat
 CMD ["npm", "start"]
